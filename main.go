@@ -1,10 +1,69 @@
-package golang_united_school_homework
+package main
 
 import (
 	"fmt"
+	"math"
 	"errors"
 )
 
+type Shape interface {
+	// CalcPerimeter returns calculation result of perimeter
+	CalcPerimeter() float64
+	// CalcArea returns calculation result of area
+	CalcArea() float64
+}
+
+// Circle must satisfy to Shape interface
+type Circle struct {
+	Radius float64
+}
+
+func (c Circle) CalcArea() float64 {
+	return math.Pi * c.Radius * c.Radius
+}
+
+func (c Circle) CalcPerimeter() float64 {
+	return 2 * math.Pi * c.Radius
+}
+
+// Rectangle must satisfy to Shape interface
+type Rectangle struct {
+	Height, Weight float64
+}
+
+func (r Rectangle) CalcArea() float64 {
+	return r.Height * r.Weight
+}
+
+func (r Rectangle) CalcPerimeter() float64 {
+	return 2 * (r.Height + r.Weight)
+}
+
+// Triangle must satisfy to Shape interface
+type Triangle struct {
+	Side float64
+}
+
+func (t Triangle) CalcArea() float64 {
+	return (t.Side * t.Side) / 2
+}
+
+func (t Triangle) CalcPerimeter() float64 {
+	return t.Side * 3
+}
+
+func main()  {
+	box := NewBox(4)
+	triangle := Triangle{Side: 5}
+	circle := Circle{Radius: 12}
+	rec := Rectangle{Height: 4, Weight: 8}
+	err := box.AddShape(rec)
+	fmt.Println(box)
+	fmt.Println(err)
+	fmt.Println(triangle)
+	fmt.Println(circle)
+	fmt.Println(rec)
+}
 // box contains list of shapes and able to perform operations on them
 type box struct {
 	shapes         []Shape
@@ -22,7 +81,7 @@ func NewBox(shapesCapacity int) *box {
 // returns the error in case it goes out of the shapesCapacity range.
 func (b *box) AddShape(shape Shape) error {
 	if b.shapesCapacity < len(b.shapes) {
-		return nil, errors.New("Out of range index")
+		return errors.New("Out of range index")
 	}
 	b.shapes = append(b.shapes, shape)
 	return nil
@@ -83,17 +142,20 @@ func (b *box) SumArea() float64 {
 func (b *box) RemoveAllCircles() error {
 	var circleExists bool = false
 	for i, shape := range b.shapes {
-		shapeType := fmt.Sprintf("%T" shape)
-		if shapeType "Circle" {
+		shapeType := fmt.Sprintf("%T", shape)
+		if shapeType == "Circle" {
 			circleExists = true
 			RemoveIndex(b.shapes, i)
 
 		}
 	}
-	return cicircleExists ? nil : errors.New("Circle not exists")
-
+	if circleExists {
+		return nil
+	} else {
+		return errors.New("Circle not exists")
+	}	
 }
 
-func RemoveIndex(s []Shape, index int) []int {
+func RemoveIndex(s []Shape, index int) []Shape {
     return append(s[:index], s[index+1:]...)
 }
