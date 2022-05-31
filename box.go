@@ -3,6 +3,7 @@ package golang_united_school_homework
 import (
 	"fmt"
 	"errors"
+	"strings"
 )
 
 // box contains list of shapes and able to perform operations on them
@@ -22,7 +23,7 @@ func NewBox(shapesCapacity int) *box {
 // returns the error in case it goes out of the shapesCapacity range.
 func (b *box) AddShape(shape Shape) error {
 	if b.shapesCapacity < len(b.shapes) {
-		return nil, errors.New("Out of range index")
+		return errors.New("Out of range index")
 	}
 	b.shapes = append(b.shapes, shape)
 	return nil
@@ -45,7 +46,7 @@ func (b *box) ExtractByIndex(i int) (Shape, error) {
 		return nil, errors.New("Out of range index")
 	}
 	extracted := b.shapes[i]
-	RemoveIndex(b.shapes, i)
+	b.shapes = RemoveIndex(b.shapes, i)
 	return extracted, nil
 }
 
@@ -83,17 +84,20 @@ func (b *box) SumArea() float64 {
 func (b *box) RemoveAllCircles() error {
 	var circleExists bool = false
 	for i, shape := range b.shapes {
-		shapeType := fmt.Sprintf("%T" shape)
-		if shapeType "Circle" {
+		shapeType := fmt.Sprintf("%T", shape)
+		if strings.Contains(shapeType, "Circle") {
 			circleExists = true
-			RemoveIndex(b.shapes, i)
-
+			b.shapes = RemoveIndex(b.shapes, i)
 		}
 	}
-	return cicircleExists ? nil : errors.New("Circle not exists")
-
+	if circleExists {
+		return nil
+	} else {
+		return errors.New("Circle not exists")
+	}	
 }
 
-func RemoveIndex(s []Shape, index int) []int {
-    return append(s[:index], s[index+1:]...)
+func RemoveIndex(s []Shape, index int) []Shape {
+	r :=  append(s[:index], s[index+1:]...)
+    return r
 }
