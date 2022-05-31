@@ -59,9 +59,10 @@ func (b *box) ReplaceByIndex(i int, shape Shape) (Shape, error) {
 	if len(b.shapes) <= i {
 		return nil, errors.New(outOfRangeErrorMsg)
 	}
+	removedShape := b.shapes[i]
 
 	b.shapes[i] = shape
-	return b.shapes[i], nil
+	return removedShape, nil
 }
 
 // SumPerimeter provides sum perimeter of all shapes in the list.
