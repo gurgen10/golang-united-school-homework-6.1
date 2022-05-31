@@ -45,7 +45,7 @@ func (b *box) GetByIndex(i int) (Shape, error) {
 // ExtractByIndex allows getting shape by index and removes this shape from the list.
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) ExtractByIndex(i int) (Shape, error) {
-	if b.shapes[i] == nil {
+	if len(b.shapes) <= i {
 		return nil, errors.New(outOfRangeErrorMsg)
 	}
 	extracted := b.shapes[i]
