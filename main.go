@@ -1,14 +1,73 @@
-package golang_united_school_homework
+package main
 
 import (
 	"fmt"
+	"math"
 	"errors"
 	"strings"
 )
-var (
-	outOfRangeErrorMsg string = "Out of range index"
-)
 
+type Shape interface {
+	// CalcPerimeter returns calculation result of perimeter
+	CalcPerimeter() float64
+	// CalcArea returns calculation result of area
+	CalcArea() float64
+}
+
+// Circle must satisfy to Shape interface
+type Circle struct {
+	Radius float64
+}
+
+func (c Circle) CalcArea() float64 {
+	return math.Pi * c.Radius * c.Radius
+}
+
+func (c Circle) CalcPerimeter() float64 {
+	return 2 * math.Pi * c.Radius
+}
+
+// Rectangle must satisfy to Shape interface
+type Rectangle struct {
+	Height, Weight float64
+}
+
+func (r Rectangle) CalcArea() float64 {
+	return r.Height * r.Weight
+}
+
+func (r Rectangle) CalcPerimeter() float64 {
+	return 2 * (r.Height + r.Weight)
+}
+
+// Triangle must satisfy to Shape interface
+type Triangle struct {
+	Side float64
+}
+
+func (t Triangle) CalcArea() float64 {
+	return (t.Side * t.Side) / 2
+}
+
+func (t Triangle) CalcPerimeter() float64 {
+	return t.Side * 3
+}
+
+func main()  {
+	box := NewBox(4)
+	triangle := Triangle{Side: 5}
+	circle := Circle{Radius: 12}
+	rec := Rectangle{Height: 4, Weight: 8}
+	err := box.AddShape(rec)
+	err = box.AddShape(circle)
+	err = box.AddShape(triangle)
+	
+	ex, err := box.ReplaceByIndex(2, Rectangle{Height: 10, Weight: 18})
+	fmt.Println(box)
+	fmt.Println(ex)
+	fmt.Println(err)
+
+}
 // box contains list of shapes and able to perform operations on them
 type box struct {
 	shapes         []Shape
@@ -25,8 +84,8 @@ func NewBox(shapesCapacity int) *box {
 // AddShape adds shape to the box
 // returns the error in case it goes out of the shapesCapacity range.
 func (b *box) AddShape(shape Shape) error {
-	if b.shapesCapacity <= len(b.shapes) {
-		return errors.New(outOfRangeErrorMsg)
+	if b.shapesCapacity < len(b.shapes) {
+		return errors.New("Out of range index")
 	}
 	b.shapes = append(b.shapes, shape)
 	return nil
@@ -35,8 +94,8 @@ func (b *box) AddShape(shape Shape) error {
 // GetByIndex allows getting shape by index
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) GetByIndex(i int) (Shape, error) {
-	if len(b.shapes) <= i {
-		return nil, errors.New(outOfRangeErrorMsg)
+	if b.shapes[i] == nil {
+		return nil, errors.New("Out of range index")
 	}
 	s := b.shapes[i]
 	return s, nil
@@ -46,7 +105,7 @@ func (b *box) GetByIndex(i int) (Shape, error) {
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) ExtractByIndex(i int) (Shape, error) {
 	if b.shapes[i] == nil {
-		return nil, errors.New(outOfRangeErrorMsg)
+		return nil, errors.New("Out of range index")
 	}
 	extracted := b.shapes[i]
 	b.shapes = RemoveIndex(b.shapes, i)
@@ -57,7 +116,7 @@ func (b *box) ExtractByIndex(i int) (Shape, error) {
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) ReplaceByIndex(i int, shape Shape) (Shape, error) {
 	if b.shapes[i] == nil {
-		return nil, errors.New(outOfRangeErrorMsg)
+		return nil, errors.New("Out of range index")
 	}
 
 	b.shapes[i] = shape
